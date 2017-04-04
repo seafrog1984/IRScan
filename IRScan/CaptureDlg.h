@@ -3,6 +3,8 @@
 
 // CCaptureDlg ¶Ô»°¿ò
 
+#include "FGInterface.h"
+
 class CCaptureDlg : public CDialogEx
 {
 	DECLARE_DYNAMIC(CCaptureDlg)
@@ -23,6 +25,9 @@ public:
 
 public:
 	CString m_path;
+	FGInterface m_FG;
 
 	virtual BOOL OnInitDialog();
+	afx_msg void OnBnClickedSave();
+	afx_msg void OnTimer(UINT_PTR nIDEvent);
 };

@@ -102,6 +102,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CaptureDlg.h" />
+    <ClInclude Include="FGInterface.h" />
     <ClInclude Include="IRScan.h" />
     <ClInclude Include="IRScanDlg.h" />
     <ClInclude Include="Resource.h" />
@@ -111,6 +112,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CaptureDlg.cpp" />
+    <ClCompile Include="FGInterface.cpp" />
     <ClCompile Include="IRScan.cpp" />
     <ClCompile Include="IRScanDlg.cpp" />
     <ClCompile Include="SettingDlg.cpp" />

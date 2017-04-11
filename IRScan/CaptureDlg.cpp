@@ -31,6 +31,7 @@ CCaptureDlg::~CCaptureDlg()
 void CCaptureDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
+	DDX_Control(pDX, IDC_MSCOMM1, m_CtrlCom);
 }
 
 
@@ -39,6 +40,7 @@ BEGIN_MESSAGE_MAP(CCaptureDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_SAVE, &CCaptureDlg::OnBnClickedSave)
 	ON_WM_TIMER()
 	ON_BN_CLICKED(IDC_INIT, &CCaptureDlg::OnBnClickedInit)
+	ON_BN_CLICKED(IDC_ROT, &CCaptureDlg::OnBnClickedRot)
 END_MESSAGE_MAP()
 
 
@@ -48,15 +50,15 @@ END_MESSAGE_MAP()
 void CCaptureDlg::OnBnClickedCon()
 {
 	// TODO:  在此添加控件通知处理程序代码
-
+	/*
 	m_CameraType = ICI_CAMERA_7000;
 	int sta = m_FG.InitializeCamera(m_CameraType);
 
 	CString tmp;
 	tmp.Format(_T("%d"), sta);
 	AfxMessageBox(tmp);
-
-	/*
+*/
+	
 	CFileDialog dlg(TRUE, NULL, NULL, OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT, NULL);
 	dlg.m_ofn.lpstrTitle = _T("打开图像文件"); //对话框标题
 	dlg.m_ofn.lpstrInitialDir = "E:\\work\\实验室\\红外扫描\\ICI获取的图像"; //默认打开路径
@@ -100,7 +102,7 @@ void CCaptureDlg::OnBnClickedCon()
 	resize(dst, img_show, Size(rect.Width(), rect.Height()), 0, 0);
 
 	imshow("view", img_show);
-	*/
+	
 	/*CDC *pDC = GetDlgItem(IDC_PIC)->GetDC();//此时利用的是CWnd的成员函数GetDC
 	CPoint m_ptOrigin(0, rect.Width() / 2), m_ptEnd(rect.Height(), rect.Width() / 2);
 	pDC->MoveTo(m_ptOrigin);
@@ -121,6 +123,30 @@ BOOL CCaptureDlg::OnInitDialog()
 	HWND hParent = ::GetParent(hWnd);
 	::SetParent(hWnd, GetDlgItem(IDC_PIC)->m_hWnd);
 	::ShowWindow(hParent, SW_HIDE);
+
+	if (m_CtrlCom.get_PortOpen())
+	{
+		m_CtrlCom.put_PortOpen(FALSE);
+	}
+	m_CtrlCom.put_CommPort(3);                //选择com3，可以根据具体情况更改  
+	m_CtrlCom.put_InBufferSize(1024);         //设置输入缓冲区的大小，Bytes  
+	m_CtrlCom.put_OutBufferSize(1024);        //设置输出缓冲区的大小，Bytes  
+	m_CtrlCom.put_Settings(_T("9600,n,8,1")); //波特率9600，无校验，8个数据位，停止位1  
+	m_CtrlCom.put_InputMode(1);               //1:表示以二进制方式检索数据  
+	m_CtrlCom.put_RThreshold(1);              //参数1表示每当串口接收缓冲区中有多于或等于1个字符时将引发一个接收数据的OnComm事件  
+	m_CtrlCom.put_InputLen(0);                //设置当前接收区长度是0  
+	if (!m_CtrlCom.get_PortOpen())
+	{
+		m_CtrlCom.put_PortOpen(TRUE);
+	}
+	else
+	{
+		AfxMessageBox(_T("Can not open serial port!"));
+	}
+	m_CtrlCom.get_Input();                    //先预读缓冲区以清除残留数据  
+	UpdateData(FALSE);
+
+
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// 异常:  OCX 属性页应返回 FALSE
@@ -257,4 +283,42 @@ void CCaptureDlg::OnTimer(UINT_PTR nIDEvent)
 void CCaptureDlg::OnBnClickedInit()
 {
 	// TODO:  在此添加控件通知处理程序代码
+}
+
+
+void CCaptureDlg::OnBnClickedRot()
+{
+	// TODO:  在此添加控件通知处理程序代码
+	m_CtrlCom.put_Output(COleVariant("1111")); //发送数据
+}
+BEGIN_EVENTSINK_MAP(CCaptureDlg, CDialogEx)
+	ON_EVENT(CCaptureDlg, IDC_MSCOMM1, 1, CCaptureDlg::OnOncommMscomm1, VTS_NONE)
+END_EVENTSINK_MAP()
+
+
+void CCaptureDlg::OnOncommMscomm1()
+{
+	// TODO:  在此处添加消息处理程序代码
+	VARIANT variant_inp;
+	COleSafeArray safearray_inp;
+	LONG len, k;
+	BYTE rxdata[2048];
+	CString strtemp;
+	if (m_CtrlCom.get_CommEvent() == 2)       //事件值为2表示缓冲区内有字符  
+	{
+		variant_inp = m_CtrlCom.get_Input();  //读缓冲区  
+		safearray_inp = variant_inp;        //VARIANT型变量转换为ColeSafeArray型变量  
+		len = safearray_inp.GetDim();       //得到有效数据长度  
+		for (k = 0; k < len; k++)
+		{
+			safearray_inp.GetElement(&k, rxdata + k);//转换为BYTE型数组  
+		}
+		for (k = 0; k < len; k++)            //将数组转换为CString型变量  
+		{
+			BYTE bt = *(char*)(rxdata + k); //字符型  
+			strtemp.Format(_T("%c"), bt);   //将字符送入临时变量strtemp存放  
+			m_sRXDATA += strtemp;           //接收到的数据放到编辑框对应的变量中  
+		}
+	}
+	SetDlgItemText(IDC_EDIT_RXDATA, m_sRXDATA);
 }

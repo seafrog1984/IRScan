@@ -105,6 +105,7 @@
     <ClInclude Include="FGInterface.h" />
     <ClInclude Include="IRScan.h" />
     <ClInclude Include="IRScanDlg.h" />
+    <ClInclude Include="mscomm1.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="SettingDlg.h" />
     <ClInclude Include="stdafx.h" />
@@ -115,6 +116,7 @@
     <ClCompile Include="FGInterface.cpp" />
     <ClCompile Include="IRScan.cpp" />
     <ClCompile Include="IRScanDlg.cpp" />
+    <ClCompile Include="mscomm1.cpp" />
     <ClCompile Include="SettingDlg.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -135,7 +137,7 @@
   </ImportGroup>
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties RESOURCE_FILE="IRScan.rc" />
+      <UserProperties _x007B_648A5600-2C6E-101B-82B6-000000000014_x007D_="CMscomm1" RESOURCE_FILE="IRScan.rc" />
     </VisualStudio>
   </ProjectExtensions>
 </Project>

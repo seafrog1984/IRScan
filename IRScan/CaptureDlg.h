@@ -1,9 +1,12 @@
 #pragma once
 
 
+#include <opencv2/imgproc/imgproc.hpp>
+#include<opencv2/highgui/highgui.hpp>
 // CCaptureDlg ¶Ô»°¿ò
 
 #include "FGInterface.h"
+using namespace cv;
 
 class CCaptureDlg : public CDialogEx
 {
@@ -26,8 +29,11 @@ public:
 public:
 	CString m_path;
 	FGInterface m_FG;
+	Mat img;
+	int m_CameraType;
 
 	virtual BOOL OnInitDialog();
 	afx_msg void OnBnClickedSave();
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
+	afx_msg void OnBnClickedInit();
 };

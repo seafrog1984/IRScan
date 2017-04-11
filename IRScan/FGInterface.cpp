@@ -3,7 +3,7 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#include "APITest.h"
+//#include "CaptureDlg.h"
 #include "FGInterface.h"
 
 #ifdef _DEBUG
@@ -196,12 +196,12 @@ class PathSplitJoin {
         
         void Split(const char *path)
             {
-            _splitpath( path, m_Drive, m_Dir, m_Name, m_Ext );
+            _splitpath_s( path, m_Drive, m_Dir, m_Name, m_Ext );
             }
 
         const char *Join(void)
             {
-            _makepath( m_Path, m_Drive, m_Dir, m_Name, m_Ext );
+            _makepath_s( m_Path, m_Drive, m_Dir, m_Name, m_Ext );
             return m_Path;
             }
 
@@ -238,8 +238,8 @@ FGInterface::FGInterface()
 
     PathSplitJoin psj;
     psj.GetAppPath();
-    strcpy(psj.m_Name, "ICI");
-    strcpy(psj.m_Ext, "dll");
+    strcpy_s(psj.m_Name, "ICI");
+    strcpy_s(psj.m_Ext, "dll");
 
     const char *lib_locations[] = {
         psj.Join(),

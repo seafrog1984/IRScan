@@ -5,6 +5,7 @@
 #include "IRScan.h"
 #include "CaptureDlg.h"
 #include "afxdialogex.h"
+#include <time.h>
 
 #include <opencv2/imgproc/imgproc.hpp>
 #include<opencv2/highgui/highgui.hpp>
@@ -37,6 +38,7 @@ BEGIN_MESSAGE_MAP(CCaptureDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_CON, &CCaptureDlg::OnBnClickedCon)
 	ON_BN_CLICKED(IDC_SAVE, &CCaptureDlg::OnBnClickedSave)
 	ON_WM_TIMER()
+	ON_BN_CLICKED(IDC_INIT, &CCaptureDlg::OnBnClickedInit)
 END_MESSAGE_MAP()
 
 
@@ -47,13 +49,21 @@ void CCaptureDlg::OnBnClickedCon()
 {
 	// TODO:  在此添加控件通知处理程序代码
 
+	m_CameraType = ICI_CAMERA_7000;
+	int sta = m_FG.InitializeCamera(m_CameraType);
+
+	CString tmp;
+	tmp.Format(_T("%d"), sta);
+	AfxMessageBox(tmp);
+
+	/*
 	CFileDialog dlg(TRUE, NULL, NULL, OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT, NULL);
 	dlg.m_ofn.lpstrTitle = _T("打开图像文件"); //对话框标题
 	dlg.m_ofn.lpstrInitialDir = "E:\\work\\实验室\\红外扫描\\ICI获取的图像"; //默认打开路径
 	dlg.m_ofn.lpstrFilter = "bmp (*.bmp)\0*.bmp\0 jpg (*.jpg)\0*.jpg\0 All Files (*.*) \0*.*\0\0"; //打开文件类型
 
-	if (dlg.DoModal() != IDOK)             // 判断是否获得图片         
-		return;
+	if (dlg.DoModal() != IDOK)             // 判断是否获得图片
+	return;
 	m_path = dlg.GetPathName();
 
 	Mat src;
@@ -68,58 +78,29 @@ void CCaptureDlg::OnBnClickedCon()
 	int i, j;
 	for (i = 0; i < dst.rows; i++)
 	{
-		for (j = 0; j < dst.cols; j++)
-		{
-			int tmp = g_src.at<uchar>(i, j);
-			/*
-					dst.at<Vec3b>(i, j)[0] = 0;
-					dst.at<Vec3b>(i, j)[1] = 0;
-					dst.at<Vec3b>(i, j)[2] = tmp;
-					*/
-			dst.at<Vec3b>(i, j)[0] = 101.2 - 116.2*cos(tmp*0.08655) + 91.93*sin(tmp*0.08592);
-			dst.at<Vec3b>(i, j)[1] = 150.9 - 110.9*cos(tmp*0.08457) - 97.33*sin(tmp*0.08457);
-			dst.at<Vec3b>(i, j)[2] = 125.3 + 59.93*cos(tmp*0.04896) - 130.2*sin(tmp*0.04896);
+	for (j = 0; j < dst.cols; j++)
+	{
+	int tmp = g_src.at<uchar>(i, j);
 
-			/*
-				if (tmp < 64)
-				{
-				dst.at<Vec3b>(i, j)[1] = 255;
-				dst.at<Vec3b>(i, j)[0] = tmp*4;
-				dst.at<Vec3b>(i, j)[2] = 0;
-				}
-				else if (tmp<128)
-				{
-				dst.at<Vec3b>(i, j)[1] = 255-(tmp-64)*4;
-				dst.at<Vec3b>(i, j)[0] = 255;
-				dst.at<Vec3b>(i, j)[2] = 0;
-				}
-				else if (tmp<192)
-				{
-				dst.at<Vec3b>(i, j)[1] = 0;
-				dst.at<Vec3b>(i, j)[0] = 255;
-				dst.at<Vec3b>(i, j)[2] = (tmp-128)*4;
-				}
-				else
-				{
-				dst.at<Vec3b>(i, j)[1] = 0;
-				dst.at<Vec3b>(i, j)[0] = 255-(tmp-192)*4;
-				dst.at<Vec3b>(i, j)[2] = 255;
-				}
-				*/
-		}
+	dst.at<Vec3b>(i, j)[0] = 101.2 - 116.2*cos(tmp*0.08655) + 91.93*sin(tmp*0.08592);
+	dst.at<Vec3b>(i, j)[1] = 150.9 - 110.9*cos(tmp*0.08457) - 97.33*sin(tmp*0.08457);
+	dst.at<Vec3b>(i, j)[2] = 125.3 + 59.93*cos(tmp*0.04896) - 130.2*sin(tmp*0.04896);
+
+
+	}
 	}
 
 	namedWindow("test");
 
 	imshow("test", g_src);
-	Mat img;  //保存缩放后的图像
+	Mat img_show;  //保存缩放后的图像
 	CRect rect;
 	GetDlgItem(IDC_PIC)->GetClientRect(&rect); //获取图像显示区
 
-	resize(dst, img, Size(rect.Width(), rect.Height()), 0, 0);
+	resize(dst, img_show, Size(rect.Width(), rect.Height()), 0, 0);
 
-	imshow("view", img);
-
+	imshow("view", img_show);
+	*/
 	/*CDC *pDC = GetDlgItem(IDC_PIC)->GetDC();//此时利用的是CWnd的成员函数GetDC
 	CPoint m_ptOrigin(0, rect.Width() / 2), m_ptEnd(rect.Height(), rect.Width() / 2);
 	pDC->MoveTo(m_ptOrigin);
@@ -149,6 +130,26 @@ BOOL CCaptureDlg::OnInitDialog()
 void CCaptureDlg::OnBnClickedSave()
 {
 	// TODO:  在此添加控件通知处理程序代码
+	/*16bit图像保存
+	vector<int> compression_params;
+	compression_params.push_back(CV_IMWRITE_PNG_COMPRESSION);
+	compression_params.push_back(0);    // 无压缩png.
+
+	imwrite("1.png", img, compression_params);
+	namedWindow("test");
+	imshow("test", img);
+	*/
+	/*
+	time_t nowTime;
+	nowTime = time(NULL);
+
+	struct tm *systime = localtime(&nowTime);
+	int year = 1900 + systime->tm_year;
+	int month = 1 + systime->tm_mon;
+	int day = systime->tm_mday;
+	*/
+	imwrite("1.bmp", img);
+
 
 }
 
@@ -187,114 +188,73 @@ void CCaptureDlg::OnTimer(UINT_PTR nIDEvent)
 			if (tmp == NULL)
 				return;
 
-			if (m_ImageData8 == NULL)
+			Mat src(height, width, CV_8UC1, tmp);
+			//	img.create(height, width, CV_16UC1, tmp);
+			src.copyTo(img);
+
+
+			/*
+			CFileDialog dlg(TRUE, NULL, NULL, OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT, NULL);
+			dlg.m_ofn.lpstrTitle = _T("打开图像文件"); //对话框标题
+			dlg.m_ofn.lpstrInitialDir = "E:\\work\\实验室\\红外扫描\\ICI获取的图像"; //默认打开路径
+			dlg.m_ofn.lpstrFilter = "bmp (*.bmp)\0*.bmp\0 jpg (*.jpg)\0*.jpg\0 All Files (*.*) \0*.*\0\0"; //打开文件类型
+
+			if (dlg.DoModal() != IDOK)             // 判断是否获得图片
+			return;
+			m_path = dlg.GetPathName();
+
+			Mat src;
+
+			//多字节字符集下 CString 转 char*  (LPSTR)(LPCSTR)
+			src = imread((LPSTR)(LPCSTR)m_path);
+			*/
+			Mat dst, g_src(img);
+			dst.create(img.size(), CV_8UC3);
+			//cvtColor(img, g_src, CV_BGR2GRAY);
+
+			int i, j;
+			for (i = 0; i < dst.rows; i++)
 			{
-				// allocate now that we know the size of the image
-				m_ImageData8 = calloc(width*height, sizeof(char));
+				for (j = 0; j < dst.cols; j++)
+				{
+					int tmp = g_src.at<uchar>(i, j);
+					/*
+					dst.at<Vec3b>(i, j)[0] = 0;
+					dst.at<Vec3b>(i, j)[1] = 0;
+					dst.at<Vec3b>(i, j)[2] = tmp;
+					*/
+					dst.at<Vec3b>(i, j)[0] = 101.2 - 116.2*cos(tmp*0.08655) + 91.93*sin(tmp*0.08592);
+					dst.at<Vec3b>(i, j)[1] = 150.9 - 110.9*cos(tmp*0.08457) - 97.33*sin(tmp*0.08457);
+					dst.at<Vec3b>(i, j)[2] = 125.3 + 59.93*cos(tmp*0.04896) - 130.2*sin(tmp*0.04896);
+
+
+				}
 			}
 
+			namedWindow("test");
 
+			imshow("test", g_src);
+			Mat img_show;  //保存缩放后的图像
+			CRect rect;
+			GetDlgItem(IDC_PIC)->GetClientRect(&rect); //获取图像显示区
 
+			resize(dst, img_show, Size(rect.Width(), rect.Height()), 0, 0);
 
+			imshow("view", img_show);
 
-			// Use m_FG.GetNextImageFloat() to get a floating-point version of the image
-			/*
-			if (tmp)
-			{
-				float fpa, lens;
-				m_FG.GetLastSensorReadings(&lens, &fpa);
-
-				char buf[50];
-				sprintf(buf, "Fpa, Lens = %.2f, %.2f", fpa, lens);
-				SetDlgItemText(IDC_FPA_LENS, buf);
-
-
-				sprintf(buf, "%.1f FPS", m_FG.GetAverageFPS());
-				SetDlgItemText(IDC_FPS, buf);
-
-
-				//
-				// Sample of picking off a temperature from image data
-				//
-				int center_x, center_y;
-				center_x = width / 2;
-				center_y = height / 2;
-
-				float temperature;
-				if (m_CameraType != ICI_CAMERA_SWIR)
-					temperature = (float)tmp[center_x + center_y * width] / 100.0;
-				else
-					temperature = (float)tmp[center_x + center_y * width];
-				sprintf_s(buf, sizeof(buf), "%.2f", temperature);
-
-				SetDlgItemText(IDC_CENTER_TEMP, buf);
-
-				// highly non-optimal conversion from 16-bit to 8-bit
-
-				// Values are in degrees C * 100.0
-				// So, 1 deg C would == 100
-				// My mind doesn't work well in deg C so I have a F_TO_C conversion
-				//
-				// topvalue represents the highest temperature value we want to display
-				// bottomvalue represents the lowest temperature value we want to display
-				//
-
-				bool auto_range = true; // set to false to use manual range...
-
-				// Manual range values
-				float topvalue = (int)(F_TO_C(130) * 100.0);
-				float bottomvalue = (int)(F_TO_C(50) * 100.0);
-
-
-				int i, end;
-				float value;
-				unsigned short *src = (unsigned short *)tmp;
-				unsigned char  *dest = (unsigned char  *)m_ImageData8;
-				unsigned char displayValue;
-				end = width * height;  // image size...
-
-
-				if (auto_range)
-				{
-					bottomvalue = 99999;
-					topvalue = -99999;
-					for (i = 0; i < end; i++)
-					{
-						value = src[i];
-						bottomvalue = min(bottomvalue, value);
-						topvalue = max(topvalue, value);
-					}
-				}
-
-				float range = topvalue - bottomvalue;
-
-				if (range != 0)
-				{
-
-					for (i = 0; i < end; i++)
-					{
-						value = *src++;
-						// Limit upper + lower values
-						if (value < bottomvalue) value = bottomvalue;
-						if (value > topvalue)    value = topvalue;
-						// Scale to 0..255 for display
-						displayValue = ((value - bottomvalue) * 255) / range;
-						*dest++ = displayValue;
-					}
-
-					CWnd *w = GetDlgItem(IDC_IMAGE);
-					if (w)
-					{
-						// invalidate the screen area of the image....
-						CRect r;
-						w->GetClientRect(&r);
-						w->MapWindowPoints(this, (POINT*)&r, 2);
-
-						InvalidateRect(r);
-					}
-				}
-				
-			}*/
+			/*CDC *pDC = GetDlgItem(IDC_PIC)->GetDC();//此时利用的是CWnd的成员函数GetDC
+			CPoint m_ptOrigin(0, rect.Width() / 2), m_ptEnd(rect.Height(), rect.Width() / 2);
+			pDC->MoveTo(m_ptOrigin);
+			pDC->LineTo(m_ptEnd);
+			ReleaseDC(pDC);
+			*/
 		}
 	}
+}
+
+
+
+void CCaptureDlg::OnBnClickedInit()
+{
+	// TODO:  在此添加控件通知处理程序代码
 }

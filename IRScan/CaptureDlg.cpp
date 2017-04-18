@@ -289,7 +289,7 @@ void CCaptureDlg::OnBnClickedInit()
 void CCaptureDlg::OnBnClickedRot()
 {
 	// TODO:  在此添加控件通知处理程序代码
-	m_CtrlCom.put_Output(COleVariant("1111")); //发送数据
+	m_CtrlCom.put_Output(COleVariant("#1100\r\n")); //发送数据
 }
 BEGIN_EVENTSINK_MAP(CCaptureDlg, CDialogEx)
 	ON_EVENT(CCaptureDlg, IDC_MSCOMM1, 1, CCaptureDlg::OnOncommMscomm1, VTS_NONE)

@@ -30,6 +30,7 @@ public:
 	CString m_path;
 	FGInterface m_FG;
 	Mat img;
+	void * m_ImageData8;
 	int m_CameraType;
 	CString m_sRXDATA;
     CString m_sTXDATA;
@@ -40,6 +41,8 @@ public:
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	afx_msg void OnBnClickedInit();
 	afx_msg void OnBnClickedRot();
+	void InterrogateFocus(void);
+
 	CMscomm1 m_CtrlCom;
 	DECLARE_EVENTSINK_MAP()
 	void OnOncommMscomm1();

@@ -418,8 +418,8 @@ void CCaptureDlg::OnTimer(UINT_PTR nIDEvent)
 
 			Mat src(height, width, CV_8UC1, tmp);
 
-			namedWindow("src");
-			imshow("src", src);
+		//	namedWindow("src");
+		//	imshow("src", src);
 
 			//	img.create(height, width, CV_16UC1, tmp);
 			src.copyTo(img);
@@ -531,11 +531,22 @@ void CCaptureDlg::OnTimer(UINT_PTR nIDEvent)
 			//	}
 			//}
 
-			namedWindow("test");
+	//		namedWindow("test");
 
-			imshow("test", g_dst);
+	//		imshow("test", g_dst);
 
+			Mat g_dstImage2, g_dstImage3, g_dstImage4, tempImage;
 
+			tempImage = g_dst;
+	
+	//		resize(tempImage, g_dstImage2, Size(tempImage.cols * 2, tempImage.rows * 2), (0, 0), (0, 0), INTER_LINEAR);
+
+			pyrUp(tempImage, g_dstImage3, Size(tempImage.cols * 2, tempImage.rows * 2));
+	//		pyrDown(tempImage, g_dstImage4, Size(tempImage.cols / 2, tempImage.rows / 2));
+
+	//		imshow("【效果图二resize放大】", g_dstImage2);
+			imshow("【效果图一向上采样】", g_dstImage3);
+	//		imshow("【效果图二向下采样】", g_dstImage4);
 			//Mat img_show;  //保存缩放后的图像
 			//CRect rect;
 			//GetDlgItem(IDC_PIC)->GetClientRect(&rect); //获取图像显示区

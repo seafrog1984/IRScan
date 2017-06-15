@@ -31,19 +31,39 @@ public:
 	FGInterface m_FG;
 	Mat img;
 	void * m_ImageData8;
+	unsigned short *tmp;
 	int m_CameraType;
 	CString m_sRXDATA;
     CString m_sTXDATA;
-
+	CString m_PID;
 
 	virtual BOOL OnInitDialog();
 	afx_msg void OnBnClickedSave();
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	afx_msg void OnBnClickedInit();
-	afx_msg void OnBnClickedRot();
+//	afx_msg void OnBnClickedRot();
 	void InterrogateFocus(void);
 
 	CMscomm1 m_CtrlCom;
 	DECLARE_EVENTSINK_MAP()
 	void OnOncommMscomm1();
+	CString m_cardNO;
+	CString m_NO;
+	CString m_name;
+	CString m_sex;
+	int m_age;
+	CString m_ID;
+	afx_msg void OnBnClickedReadcard();
+	afx_msg void OnBnClickedAdj();
+	virtual BOOL PreTranslateMessage(MSG* pMsg);
+//	afx_msg void OnBnClickedRot2();
+	afx_msg void OnBnClickedP1();
+	afx_msg void OnBnClickedP2();
+	afx_msg void OnBnClickedP3();
+	afx_msg void OnBnClickedP4();
+	afx_msg void OnBnClickedConfirm();
+
+	void Ori2Mat(unsigned short *tmp,Mat &g_dst);
+	void rot90(Mat g_dst, Mat &tmpimg);
+	void MultiImage_OneWin(const std::string& MultiShow_WinName, const vector<Mat>& SrcImg_V, CvSize SubPlot, CvSize ImgMax_Size );
 };
